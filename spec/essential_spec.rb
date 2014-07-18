@@ -17,5 +17,10 @@ describe "Knife Essentials spec" do
   it "should add CCCLXIX + DCCCXLV => MCCXIV" do
     expect(Knife.add("CCCLXIX", "DCCCXLV")).to eq("MCCXIV")
   end
+  
+  it "should add CXLVII + MCV => MCCLII" do
+    expect(Knife.add("CXLVII", "MCV")).to eq("MCCLII")
+  end
+
 end
 
