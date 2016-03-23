@@ -1,56 +1,47 @@
 module Knife
-  ORDER = "MDCLXVI"
+  ORDER = 'MDCLXVI'.freeze
+
   CONVERSIONS = {
-    "IV" => "IIII",
-    "IX" => "VIIII",
-    "XL" => "XXXX",
-    "XC" => "LXXXX",
-    "CD" => "CCCC",
-    "CM" => "DCCCC"
-  }
+    'IV' => 'IIII',
+    'IX' => 'VIIII',
+    'XL' => 'XXXX',
+    'XC' => 'LXXXX',
+    'CD' => 'CCCC',
+    'CM' => 'DCCCC'
+  }.freeze
 
   COMPRESSIONS = {
-    "IIIII" => "V",
-    "VV" => "X",
-    "XXXXX" => "L",
-    "LL" => "C",
-    "CCCCC" => "D",
-    "DD" => "M"
-  }
+    'IIIII' => 'V',
+    'VV' => 'X',
+    'XXXXX' => 'L',
+    'LL' => 'C',
+    'CCCCC' => 'D',
+    'DD' => 'M'
+  }.freeze
 
-  private
-  def self.uncompact(number)
-    CONVERSIONS.each do |compressed, uncompressed|
-      number.gsub!(compressed, uncompressed)
-    end
-    number
+  def self.add(a, b)
+    compress(
+      sort_number(
+        uncompress(a) + uncompress(b)
+      )
+    )
   end
 
   def self.sort_number(number)
-    number = number.split('')
-    number.sort_by! do |n|
-      [ORDER.index(n)]
-    end
-    number.join
+    number.
+      split('').
+      sort_by! { |n| [ORDER.index(n)] }.
+      join
   end
 
-  def self.compact(number)
-    COMPRESSIONS.each do |uncompressed, compressed|
-      number.gsub!(uncompressed, compressed)
-    end
-
-    CONVERSIONS.each do |compressed, uncompressed|
-      number.gsub!(uncompressed, compressed)
-    end
-    number
+  def self.uncompress(number)
+    CONVERSIONS.
+      reduce(number) { |acc, conversion| acc.gsub conversion[0], conversion[1] }
   end
 
-  public
-  def self.add(a, b)
-    num = self.uncompact(a) + self.uncompact(b)
-    num = self.sort_number num
-    self.compact num
+  def self.compress(number)
+    COMPRESSIONS.
+      merge(CONVERSIONS.invert).
+      reduce(number) { |acc, compression| acc.gsub compression[0], compression[1] }
   end
-
 end
-
